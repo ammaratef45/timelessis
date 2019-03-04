@@ -25,10 +25,11 @@ def __location_access(method=None, *args, **kwargs):
 
 def __employee_access(method=None, *args, **kwargs):
     permitted, user = False, flask.g.get("user")
-    employee_id = kwargs.get("employee_id")
+    employee_id, company_id = kwargs.get("employee_id"), kwargs.get("company_id")
     if method == Method.READ and user:
         if employee_id:
-            permitted = employee_id == user.id
+            permitted = employee_id == user.id or \
+                (user.role.is_director() and user.company_id == company_id)
         else:
             permitted = True
     return permitted
